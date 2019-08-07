@@ -19,7 +19,7 @@ include('config/db_connect.php');
     // mysqli_close($conn);
     
     $email = $password = '';
-    $error = ['email' => '', 'password' => ''];
+    $error = ['email' => '', 'password' => '', 'invalid' => ''];
     if(isset($_POST['submit'])) {
         $email = $_POST['email'];
         $password = $_POST['password'];
@@ -36,7 +36,7 @@ include('config/db_connect.php');
         if(array_filter($error)) {
             echo 'errors in the form';
         } else {
-            echo 'form is valid';
+            // echo 'form is valid';
             $email = stripcslashes($email);
             $password = stripcslashes($password);
 
@@ -50,29 +50,18 @@ include('config/db_connect.php');
                 echo $_SESSION['email'];
                 header("Location: index.php");
             } else {
-                echo "username or password is incorrect.";
+                $error['invalid'] = "Email or Password is incorrect.";
             }
 
         }
     }
 ?>
 
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link rel="stylesheet" href="style.css">
-
-    <title>Login</title>
-</head>
-<body>
+<?php include 'templates/header.php'; ?>
     <div class="container">
         <div class="row">
             <div class="col md6 s6 offset-s3">
+                <?php if(!isset($_SESSION['email'])): ?>
                 <h1>Login Form</h1>
                 <form action="login.php" method="POST">
                     <label for="email">Email</label>
@@ -84,10 +73,15 @@ include('config/db_connect.php');
                     <div class="center">
                         <input type="submit" class="btn" name="submit" value="Login">
                     </div>
+                    <div class="red-text"><?php echo $error['invalid']; ?></div>
                 </form>
                 <div class="right">
                     <p>don't have an account? <a href="signup.php">Sign Up</a></p>
                 </div>
+                <?php else: ?>
+                    <h4>You are already Logged in as <?php echo $_SESSION['email']; ?></h4>
+                    <a href="logout.php">Logout</a>
+                <?php endif ?>
             </div>
         </div>
         <!-- <div class="row">
@@ -98,5 +92,4 @@ include('config/db_connect.php');
             </ul>
         </div> -->
     </div>
-</body>
-</html>
+<?php include 'templates/footer.php'; ?>
