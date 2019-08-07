@@ -1,11 +1,12 @@
 <?php
 
     include('config/db_connect.php');
-
+    session_start();
 
 
     $email = $password = $confirmPassword = '';
     $error = ['email' => '', 'password' => '', 'confirmPassword' => ''];
+
     if(isset($_POST['submit'])) {
         $email = $_POST['email'];
         $password = $_POST['password'];
@@ -40,13 +41,22 @@
             $email = mysqli_real_escape_string($conn, $_POST['email']);
             $password = md5($password);
 //          create sql
-            $sql = "INSERT INTO account_info(email, password) VALUES('$email', '$password')";
-            if(mysqli_query($conn, $sql)) {
-//               success
-                header('Location: index.php');
-            }else {
-                echo 'query error ' . mysqli_error($conn);
+//             $sql = "INSERT INTO account_info(email, password) VALUES('$email', '$password')";
+//             if(mysqli_query($conn, $sql)) {
+// //               success
+//                 header('Location: login.php');
+//             }else {
+//                 echo 'query error ' . mysqli_error($conn);
 
+//             }
+            $sql = "INSERT INTO account_info(email, password) VALUES(?,?)";
+            $stmt = mysqli_stmt_init($conn);
+            if(!mysqli_stmt_prepare($stmt, $sql)) {
+                echo "SQL statement failed";
+            } else {
+                mysqli_stmt_bind_param($stmt, "ss", $email, $password);
+                mysqli_stmt_execute($stmt);
+                header('Location: login.php');
             }
         }
     }
@@ -83,7 +93,7 @@
                 </div>
             </form>
             <div class="right">
-                <p>already have an account? <a href="index.php">Login</a></p>
+                <p>already have an account? <a href="login.php">Login</a></p>
             </div>
         </div>
     </div>
